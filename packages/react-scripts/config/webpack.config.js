@@ -66,12 +66,18 @@ module.exports = function(webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
+  // Specify the host and port, so hot reloading will work when js is hosted on another server
+  // NOTE: any changes here need to be mirrored in start.js
+  const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3000;
+  const HOST = process.env.HOST || '0.0.0.0';
+  var devServer = HOST + ':' + DEFAULT_PORT;
+
   // Webpack uses `publicPath` to determine where the app is being served from.
   // It requires a trailing slash, or the file assets will get an incorrect path.
   // In development, we always serve from the root. This makes config easier.
   const publicPath = isEnvProduction
     ? paths.servedPath
-    : isEnvDevelopment && '/';
+    : isEnvDevelopment && devServer + '/';
   // Some apps do not use client-side routing with pushState.
   // For these, "homepage" can be set to "." to enable relative asset paths.
   const shouldUseRelativeAssetPaths = publicPath === './';
@@ -165,7 +171,12 @@ module.exports = function(webpackEnv) {
       // require.resolve('webpack-dev-server/client') + '?/',
       // require.resolve('webpack/hot/dev-server'),
       isEnvDevelopment &&
-        require.resolve('react-dev-utils/webpackHotDevClient'),
+        // require.resolve('react-dev-utils/webpackHotDevClient'),
+        require.resolve('webpack-dev-server/client') +
+          '?' +
+          devServer +
+          '/sockjs-node',
+      require.resolve('webpack/hot/dev-server'),
       // Finally, this is your app's code:
       paths.appIndexJs,
       // We include the app code last so that if there is a runtime error during
@@ -181,7 +192,7 @@ module.exports = function(webpackEnv) {
       // In development, it does not produce real files.
       filename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'static/js/bundle.js',
+        : isEnvDevelopment && 'static/js/[name].js',
       // TODO: remove this when upgrading to webpack 5
       futureEmitAssets: true,
       // There are also additional JS chunk files if you use code splitting.
@@ -271,13 +282,13 @@ module.exports = function(webpackEnv) {
       // Automatically split vendor and commons
       // https://twitter.com/wSokra/status/969633336732905474
       // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
-      splitChunks: {
-        chunks: 'all',
-        name: false,
-      },
+      // splitChunks: {
+      //   chunks: 'all',
+      //   name: false,
+      // },
       // Keep the runtime chunk separated to enable long term caching
       // https://twitter.com/wSokra/status/969679223278505985
-      runtimeChunk: true,
+      // runtimeChunk: true,
     },
     resolve: {
       // This allows you to set a fallback for where Webpack should look for modules.
@@ -629,7 +640,7 @@ module.exports = function(webpackEnv) {
       // having to parse `index.html`.
       new ManifestPlugin({
         fileName: 'asset-manifest.json',
-        publicPath: publicPath,
+        publicPath: '/', // Rails' webpack_bundle_tag and webpack_bundle_url helpers are OK with a relative url
         generate: (seed, files) => {
           const manifestFiles = files.reduce(function(manifest, file) {
             manifest[file.name] = file.path;
