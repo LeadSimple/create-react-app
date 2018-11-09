@@ -10,6 +10,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const globby = require('globby');
 const url = require('url');
 
 // Make sure any symlinks in the project folder are resolved:
@@ -83,7 +84,7 @@ module.exports = {
   appBuild: resolveApp(envBuildPath || 'build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveModule(resolveApp, 'src/index'),
+  appEntryPoints: globby.sync(resolveApp('src/entries/*')),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   appTsConfig: resolveApp('tsconfig.json'),
@@ -106,7 +107,7 @@ module.exports = {
   appBuild: resolveApp(envBuildPath || 'build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveModule(resolveApp, 'src/index'),
+  appEntryPoints: globby.sync(resolveApp('src/entries/*')),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   appTsConfig: resolveApp('tsconfig.json'),
@@ -138,10 +139,10 @@ if (
   module.exports = {
     dotenv: resolveOwn('template/.env'),
     appPath: resolveApp('.'),
-    appBuild: resolveOwn('../../build'),
+    appBuild: resolveOwn(envBuildPath || '../../build'),
     appPublic: resolveOwn('template/public'),
     appHtml: resolveOwn('template/public/index.html'),
-    appIndexJs: resolveModule(resolveOwn, 'template/src/index'),
+    appEntryPoints: globby.sync(resolveApp('template/src/entries/*')),
     appPackageJson: resolveOwn('package.json'),
     appSrc: resolveOwn('template/src'),
     appTsConfig: resolveOwn('template/tsconfig.json'),
