@@ -20,4 +20,9 @@ npm publish --access public
 
 # Update package.json in main app, and test locally
 # Once we confirm everything is working, we could update this package's version to drop the -rc.1, but that isn't really necessary
+
+# Force push our rebased branch up to Github (careful, make sure it is all working first!)
+cd ../..
+git status
+git push origin --force
 ```
