@@ -434,6 +434,23 @@ module.exports = function(webpackEnv) {
                       },
                     },
                   ],
+                  // Attempt to minimize bundle-size while still allowing root-level import statements
+                  // https://material-ui.com/guides/minimizing-bundle-size/
+                  [
+                    'babel-plugin-transform-imports',
+                    {
+                      '@material-ui/core': {
+                        // Use "transform: '@material-ui/core/${member}'," if your bundler does not support ES modules
+                        'transform': '@material-ui/core/esm/${member}',
+                        'preventFullImport': true
+                      },
+                      '@material-ui/icons': {
+                        // Use "transform: '@material-ui/icons/${member}'," if your bundler does not support ES modules
+                        'transform': '@material-ui/icons/esm/${member}',
+                        'preventFullImport': true
+                      }
+                    }
+                  ]
                 ],
                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                 // It enables caching results in ./node_modules/.cache/babel-loader/
