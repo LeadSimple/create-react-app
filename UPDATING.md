@@ -7,11 +7,11 @@ cd ./create-react-app
 
 # Pull upstream changes into master branch
 git checkout master
-git pull upstream
+git pull upstream master
 
 # Rebase our custom branch onto the desired tag
 git checkout custom-react-scripts
-git rebase --onto v2.1.8 master
+git rebase --onto v3.1.1 master
 # Note: edit package.json to have an rc version, like 2.1.8-rc.1
 
 # Publish package to NPM
